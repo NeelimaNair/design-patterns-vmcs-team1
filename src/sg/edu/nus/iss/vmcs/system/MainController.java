@@ -28,6 +28,9 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
+/*
+ * File amended to include the singleton pattern
+ */
 public class MainController {
 	private SimulationController  simulatorCtrl;
 	private MachineryController   machineryCtrl;
@@ -84,7 +87,8 @@ public class MainController {
 			machineryCtrl = new MachineryController(this);
 			machineryCtrl.initialize();
 			maintenanceCtrl = new MaintenanceController(this);
-			txCtrl=new TransactionController(this);
+			txCtrl = TransactionController.getInstance();
+			txCtrl.setMainController(this);
 			dispenseCtrl=new DispenseController(txCtrl);
 	        coinReceiver=new CoinReceiver(txCtrl);
 	        changeGiver=new ChangeGiver(txCtrl);
