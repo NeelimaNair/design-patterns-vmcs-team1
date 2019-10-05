@@ -7,11 +7,6 @@
  */
 package sg.edu.nus.iss.vmcs.system;
 
-import sg.edu.nus.iss.vmcs.customer.TransactionController;
-import sg.edu.nus.iss.vmcs.machinery.MachineryController;
-import sg.edu.nus.iss.vmcs.maintenance.MaintenanceController;
-import sg.edu.nus.iss.vmcs.util.VMCSException;
-
 /**
  * This control object represents the operating system user interface at which the VMCS
  * application can be launched.
@@ -19,16 +14,15 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class SimulationController {
+public class SimulationController  extends BaseController{
 	private SimulatorControlPanel scp = null;
-	public  MainController        mCtrl = null;
 
 	/**
 	 * This constructor creates an instance of the SimulationController object.
 	 * @param ctrl the MainController.
 	 */
 	public SimulationController(MainController ctrl) {
-		mCtrl = ctrl;
+		setMainController(ctrl);
 		scp = new SimulatorControlPanel(this);
 	}
 
@@ -58,7 +52,7 @@ public class SimulationController {
 	 * when instructed by the MainController&#46;
 	 */
 	public void stop() {
-		mCtrl.closeDown();
+		mainController.closeDown();
 	}
 
 	/**
@@ -102,11 +96,12 @@ public class SimulationController {
 	public void setupSimulator() {
 		//MaintenanceController maintenanceCtrl;
 		//maintenanceCtrl = mCtrl.getMaintenanceController();
-		MachineryController machCtrl;
+		//MachineryController machCtrl;
 
-		machCtrl = mCtrl.getMachineryController();
+		//machCtrl = mCtrl.getMachineryController();
 		scp.setActive(SimulatorControlPanel.ACT_MACHINERY, false);
-		try {
+		mainController.setupSimulator();
+		/*try {
 			// activate when not login
 			// always diaply the door locked; isOpen false
 			machCtrl.displayMachineryPanel();
@@ -120,7 +115,7 @@ public class SimulationController {
 			machCtrl.displayDoorState();
 		} catch (VMCSException e) {
 			System.out.println("SimulationController.setupSimulator:" + e);
-		}
+		}*/
 	}
 
 	/**
@@ -131,11 +126,9 @@ public class SimulationController {
 	 * 2- Send a message to instruct all its constituent objects to display themselves,
 	 * and also instruct them all, except for Password Box to become deactivated&#46;
 	 */
-	public void setupMaintainer() {
-		MaintenanceController mctrl;
-		mctrl = mCtrl.getMaintenanceController();
+	public void setupMaintainer() {		
 		scp.setActive(SimulatorControlPanel.ACT_MAINTAINER, false);
-		mctrl.displayMaintenancePanel();
+		mainController.setupMaintainer();
 	}
 	
 	/**
@@ -151,17 +144,9 @@ public class SimulationController {
 	 * 4- Activate the No Change Available Display (if necessary)&#46;
 	 */
 	public void setupCustomer() {
-		TransactionController cctrl;
-		cctrl = mCtrl.getTransactionController();
 		scp.setActive(SimulatorControlPanel.ACT_CUSTOMER, false);
-		cctrl.displayCustomerPanel();
+		mainController.setupCustomer();
 	}
 
-	/**
-	 * This method returns the MainController.
-	 * @return the MainController.
-	 */
-	public MainController getMainController() {
-		return mCtrl;
-	}
+	
 }//End of class SimulationController

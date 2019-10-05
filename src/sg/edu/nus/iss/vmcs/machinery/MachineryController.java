@@ -7,9 +7,12 @@
  */
 package sg.edu.nus.iss.vmcs.machinery;
 
-import sg.edu.nus.iss.vmcs.system.*;
-import sg.edu.nus.iss.vmcs.util.*;
-import sg.edu.nus.iss.vmcs.store.*;
+import sg.edu.nus.iss.vmcs.store.Coin;
+import sg.edu.nus.iss.vmcs.system.BaseController;
+import sg.edu.nus.iss.vmcs.system.MainController;
+import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
+import sg.edu.nus.iss.vmcs.util.MessageDialog;
+import sg.edu.nus.iss.vmcs.util.VMCSException;
 
 /**
  * This object controls the Change State use case.
@@ -17,32 +20,21 @@ import sg.edu.nus.iss.vmcs.store.*;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class MachineryController {
+public class MachineryController extends BaseController{
 	/**This attribute reference to the MainController*/
-	public MainController mainCtrl;
-	/**This attribute reference to the StoreController*/
-	public StoreController storeCtrl;
 
 	private MachinerySimulatorPanel ml;
 	private Door door;
 
 	/**
 	 * This constructor creates an instance of MachineryController.
-	 * @param mctrl the MainController.
+	 * @param mCtrl the MainController.
 	 */
-	public MachineryController(MainController mctrl) {
-		mainCtrl = mctrl;
-		storeCtrl = mctrl.getStoreController();
+	public MachineryController(MainController ctrl) {
+		mainController = ctrl;
 	}
 
-	/**
-	 * This method returns the MainController.
-	 * @return the MainController.
-	 */
-	public MainController getMainController() {
-		return mainCtrl;
-	}
-
+	
 	/**
 	 * This method creates the Door.
 	 * @throws VMCSException if fails to instantiate Door.
@@ -67,7 +59,7 @@ public class MachineryController {
 	 * This method displays and initializes the MachinerySimulatorPanel.
 	 */
 	public void displayMachineryPanel() {
-		SimulatorControlPanel scp = mainCtrl.getSimulatorControlPanel();
+		SimulatorControlPanel scp = mainController.getSimulatorControlPanel();
 		if (ml == null)
 			ml = new MachinerySimulatorPanel(scp, this);
 		ml.display();
@@ -89,7 +81,7 @@ public class MachineryController {
 			return;
 		}
 		ml.dispose();
-		SimulatorControlPanel scp = mainCtrl.getSimulatorControlPanel();
+		SimulatorControlPanel scp = mainController.getSimulatorControlPanel();
 		scp.setActive(SimulatorControlPanel.ACT_MACHINERY, true);
 	}
 
@@ -113,7 +105,7 @@ public class MachineryController {
 		displayDoorState();
 		
 		//Disable Activate Customer Panel Button
-		mainCtrl.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER, false);
+		mainController.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER, false);
 	}
 
 	/* ************************************************************
@@ -163,7 +155,7 @@ public class MachineryController {
 	 * @throws VMCSException if fail to update cash store display.
 	 */
 	public void storeCoin(Coin c) throws VMCSException {
-		storeCtrl.storeCoin(c);
+	    mainController.storeCoin(c);
 		if (ml != null)
 			ml.getCashStoreDisplay().update();
 	}
@@ -176,7 +168,7 @@ public class MachineryController {
 	 * @throws VMCSException if fail to update cash store display.
 	 */
 	public void dispenseDrink(int idx) throws VMCSException {
-		storeCtrl.dispenseDrink(idx);
+	    mainController.dispenseDrink(idx);
 		if (ml != null)
 			ml.getCashStoreDisplay().update();
 
@@ -191,7 +183,7 @@ public class MachineryController {
 	 * @throws VMCSException if fail to update cash store display.
 	 */
 	public void giveChange(int idx, int numOfCoins) throws VMCSException {
-		storeCtrl.giveChange(idx, numOfCoins);
+	    mainController.giveChange(idx, numOfCoins);
 		if (ml != null)
 			ml.getCashStoreDisplay().update();
 	}

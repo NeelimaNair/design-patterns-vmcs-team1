@@ -10,12 +10,11 @@ package sg.edu.nus.iss.vmcs.maintenance;
 import java.awt.Frame;
 
 import sg.edu.nus.iss.vmcs.customer.CustomerPanel;
-import sg.edu.nus.iss.vmcs.machinery.MachineryController;
 import sg.edu.nus.iss.vmcs.store.CashStoreItem;
 import sg.edu.nus.iss.vmcs.store.DrinksBrand;
 import sg.edu.nus.iss.vmcs.store.DrinksStoreItem;
 import sg.edu.nus.iss.vmcs.store.Store;
-import sg.edu.nus.iss.vmcs.store.StoreController;
+import sg.edu.nus.iss.vmcs.system.BaseController;
 import sg.edu.nus.iss.vmcs.system.MainController;
 import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
 import sg.edu.nus.iss.vmcs.util.MessageDialog;
@@ -27,8 +26,7 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class MaintenanceController {
-	private MainController mCtrl;
+public class MaintenanceController extends BaseController{
 	private MaintenancePanel mpanel;
 	private AccessManager am;
 
@@ -37,23 +35,16 @@ public class MaintenanceController {
 	 * @param mctrl the MainController.
 	 */
 	public MaintenanceController(MainController mctrl) {
-		mCtrl = mctrl;
+		mainController= mctrl;
 		am = new AccessManager(this);
 	}
 
-	/**
-	 * This method returns the MainController.
-	 * @return the MainController.
-	 */
-	public MainController getMainController() {
-		return mCtrl;
-	}
-
+	
 	/**
 	 * This method setup the maintenance panel and display it.
 	 */
 	public void displayMaintenancePanel() {
-		SimulatorControlPanel scp = mCtrl.getSimulatorControlPanel();
+		SimulatorControlPanel scp = mainController.getSimulatorControlPanel();
 		if (mpanel == null)
 			mpanel = new MaintenancePanel((Frame) scp, this);
 		mpanel.display();
@@ -96,10 +87,9 @@ public class MaintenanceController {
 			// login successful
 			mpanel.setActive(MaintenancePanel.WORKING, true);
 			mpanel.setActive(MaintenancePanel.PSWD, false);
-			MachineryController machctrl = mCtrl.getMachineryController();
-			machctrl.setDoorState(false);
+			mainController.setDoorState(false);
 			//Terminate customer transaction
-			mCtrl.getTransactionController().terminateTransaction();
+			mainController.terminateTransaction();
 		}
 	}
 
@@ -109,10 +99,9 @@ public class MaintenanceController {
 	 * @param idx the index of the Coin.
 	 */
 	public void displayCoin(int idx) {
-		StoreController sctrl = mCtrl.getStoreController();
 		CashStoreItem item;
 		try {
-			item = (CashStoreItem) sctrl.getStoreItem(Store.CASH, idx);
+			item = (CashStoreItem) mainController.getStoreItem(Store.CASH, idx);
 			mpanel.getCoinDisplay().displayQty(idx, item.getQuantity());
 		} catch (VMCSException e) {
 			System.out.println("MaintenanceController.displayCoin:" + e);
@@ -127,10 +116,9 @@ public class MaintenanceController {
 	 * @param idx the index of the drinks.
 	 */
 	public void displayDrinks(int idx) {
-		StoreController sctrl = mCtrl.getStoreController();
 		DrinksStoreItem item;
 		try {
-			item = (DrinksStoreItem) sctrl.getStoreItem(Store.DRINK, idx);
+			item = (DrinksStoreItem) mainController.getStoreItem(Store.DRINK, idx);
 			DrinksBrand db = (DrinksBrand) item.getContent();
 			mpanel.getDrinksDisplay().displayQty(idx, item.getQuantity());
 			mpanel.displayPrice(db.getPrice());
@@ -145,9 +133,8 @@ public class MaintenanceController {
 	 * @param pr the price of the drinks.
 	 */
 	public void setPrice(int pr) {
-		StoreController sctrl = mCtrl.getStoreController();
 		int curIdx = mpanel.getCurIdx();
-		sctrl.setPrice(curIdx, pr);
+		mainController.setPrice(curIdx, pr);
 		mpanel.getDrinksDisplay().getPriceDisplay().setValue(pr + "C");
 	}
 
@@ -156,8 +143,7 @@ public class MaintenanceController {
 	 * This method is invoked by the TotalCashButtonListener.
 	 */
 	public void getTotalCash() {
-		StoreController sctrl = mCtrl.getStoreController();
-		int tc = sctrl.getTotalCash();
+		int tc = mainController.getTotalCash();
 		mpanel.displayTotalCash(tc);
 
 	}
@@ -168,15 +154,13 @@ public class MaintenanceController {
 	 * It get all the cash from store and set store cash 0.
 	 */
 	public void transferAll() {
-		StoreController sctrl = mCtrl.getStoreController();
-		MachineryController machctrl = mCtrl.getMachineryController();
 
 		int cc; // coin quantity;
 
 		try {
-			cc = sctrl.transferAll();
+			cc = mainController.transferAll();
 			mpanel.displayCoins(cc);
-			machctrl.displayCoinStock();
+			mainController.displayCoinStock();
 			// the cash qty current is displayed in the Maintenance panel needs to be update to be 0;
 			// not required.
 			mpanel.updateCurrentQtyDisplay(Store.CASH, 0);
@@ -216,9 +200,8 @@ public class MaintenanceController {
 	 */
 	public void logoutMaintainer() {
 
-		MachineryController machctrl = mCtrl.getMachineryController();
 
-		boolean ds = machctrl.isDoorClosed();
+		boolean ds = mainController.isDoorClosed();
 
 		if (ds == false) {
 			MessageDialog msg =
@@ -232,12 +215,12 @@ public class MaintenanceController {
 		mpanel.setActive(MaintenancePanel.DIALOG, true);
 		
 		//Refresh Customer Panel
-		CustomerPanel custPanel=mCtrl.getTransactionController().getCustomerPanel();
+		CustomerPanel custPanel=mainController.getCustomerPanel();
 		if(custPanel==null){
-			mCtrl.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER, true);
+			mainController.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER, true);
 		}
 		else{
-			mCtrl.getTransactionController().refreshCustomerPanel();
+			mainController.refreshCustomerPanel();
 		}
 	}
 

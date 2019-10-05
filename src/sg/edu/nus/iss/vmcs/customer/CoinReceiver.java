@@ -9,7 +9,6 @@ package sg.edu.nus.iss.vmcs.customer;
 
 import java.util.ArrayList;
 
-import sg.edu.nus.iss.vmcs.machinery.MachineryController;
 import sg.edu.nus.iss.vmcs.store.CashStore;
 import sg.edu.nus.iss.vmcs.store.Coin;
 import sg.edu.nus.iss.vmcs.store.Store;
@@ -73,7 +72,7 @@ public class CoinReceiver {
 	 * @param weight the weight of the coin received&#46;
 	 */
 	public void receiveCoin(double weight){
-		CashStore cashStore=(CashStore)txCtrl.getMainController().getStoreController().getStore(Store.CASH);
+		CashStore cashStore=(CashStore)txCtrl.getMainController().getStore(Store.CASH);
 		Coin coin=cashStore.findCoin(weight);
 		if(coin==null){
 			txCtrl.getCustomerPanel().displayInvalidCoin(true);
@@ -107,11 +106,10 @@ public class CoinReceiver {
 	 * @return return TRUE if cash has been stored, else return FALSE.
 	 */
 	public boolean storeCash(){
-		MachineryController machineryCtrl=txCtrl.getMainController().getMachineryController();
 		try{
 			for(int i=0;i<arlCoins.size();i++){
 				Coin coin=(Coin)arlCoins.get(i);
-				machineryCtrl.storeCoin(coin);
+				txCtrl.getMainController().storeCoinInMachinery(coin);
 			}
 			resetReceived();
 			txCtrl.getCustomerPanel().setTotalMoneyInserted(0);

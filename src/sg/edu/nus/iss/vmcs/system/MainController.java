@@ -9,10 +9,17 @@ package sg.edu.nus.iss.vmcs.system;
 
 import java.io.IOException;
 
+import sg.edu.nus.iss.vmcs.customer.ChangeGiver;
+import sg.edu.nus.iss.vmcs.customer.CoinReceiver;
+import sg.edu.nus.iss.vmcs.customer.CustomerPanel;
+import sg.edu.nus.iss.vmcs.customer.DispenseController;
 import sg.edu.nus.iss.vmcs.customer.TransactionController;
 import sg.edu.nus.iss.vmcs.machinery.MachineryController;
 import sg.edu.nus.iss.vmcs.maintenance.MaintenanceController;
+import sg.edu.nus.iss.vmcs.store.Coin;
+import sg.edu.nus.iss.vmcs.store.Store;
 import sg.edu.nus.iss.vmcs.store.StoreController;
+import sg.edu.nus.iss.vmcs.store.StoreItem;
 import sg.edu.nus.iss.vmcs.util.VMCSException;
 
 /**
@@ -27,6 +34,10 @@ public class MainController {
 	private MaintenanceController maintenanceCtrl;
 	private TransactionController txCtrl;
 	private StoreController       storeCtrl;
+	
+	private DispenseController dispenseCtrl;
+    private ChangeGiver changeGiver;
+    private CoinReceiver coinReceiver;
 
 	private String      propertyFile;
 
@@ -74,11 +85,114 @@ public class MainController {
 			machineryCtrl.initialize();
 			maintenanceCtrl = new MaintenanceController(this);
 			txCtrl=new TransactionController(this);
+			dispenseCtrl=new DispenseController(txCtrl);
+	        coinReceiver=new CoinReceiver(txCtrl);
+	        changeGiver=new ChangeGiver(txCtrl);
 		} catch (IOException e) {
 			throw new VMCSException(
 				"MainController.initialize",
 				e.getMessage());
 		}
+	}
+	
+	public void setupCustomer() {
+        txCtrl.displayCustomerPanel();
+    }
+	
+	public void setupMaintainer() {
+	    maintenanceCtrl.displayMaintenancePanel();
+    }
+	
+	public void setupSimulator() {
+	    System.out.println("setupSimulator called from MainController");
+        //MaintenanceController maintenanceCtrl;
+        //maintenanceCtrl = mCtrl.getMaintenanceController();
+        //MachineryController machCtrl;
+
+        //machCtrl = getMachineryController();
+        
+        try {
+            //getSimulationController().setupSimulator();
+            
+            // activate when not login
+            // always diaply the door locked; isOpen false
+            machineryCtrl.displayMachineryPanel();
+
+            // display drink stock;
+            machineryCtrl.displayDrinkStock();
+
+            // display coin quantity;
+            machineryCtrl.displayCoinStock();
+
+            machineryCtrl.displayDoorState();
+        } catch (VMCSException e) {
+            System.out.println("SimulationController.setupSimulator:" + e);
+        }
+    }
+	
+	public void storeCoin(Coin c) throws VMCSException {
+	    System.out.println("storeCoin called from MainController");
+	    storeCtrl.storeCoin(c);
+	}
+	
+	public void dispenseDrink(int idx) throws VMCSException {
+	    System.out.println("dispenseDrink called from MainController");
+	    storeCtrl.dispenseDrink(idx);
+	}
+	
+	public void giveChange(int idx, int numOfCoins) throws VMCSException {
+	    System.out.println("giveChange called from MainController");
+	    storeCtrl.giveChange(idx, numOfCoins);
+	}
+	
+	public StoreItem getStoreItem(int type, int idx) {
+	    System.out.println("getStoreItem called from MainController");
+	    return storeCtrl.getStoreItem(type, idx);
+	}
+	
+	public void setPrice(int idx, int pr)  {
+	    System.out.println("setPrice called from MainController");
+	    storeCtrl.setPrice(idx, pr);
+	}
+	
+	public int getTotalCash(){
+	    System.out.println("getTotalCash called from MainController");
+	    return storeCtrl.getTotalCash();
+	}
+	
+	public int transferAll() {
+	    System.out.println("transferAll called from MainController");
+	    return storeCtrl.transferAll();
+	}
+	
+	public void displayCoinStock() throws VMCSException {
+	    System.out.println("displayCoinStock called from MainController");
+	    machineryCtrl.displayCoinStock();
+	}
+	
+	public boolean isDoorClosed() {
+	    System.out.println("isDoorClosed called from MainController");
+	    return machineryCtrl.isDoorClosed();
+	}
+	
+	public void setDoorState(boolean state) {
+	    System.out.println("setDoorState called from MainController");
+	    machineryCtrl.setDoorState(state);
+	}
+	
+	public void terminateTransaction(){
+	    System.out.println("terminateTransaction called from MainController");
+	    txCtrl.terminateTransaction();
+	}
+	
+	public CustomerPanel getCustomerPanel(){
+	    System.out.println("getCustomerPanel called from MainController");
+	    return txCtrl.getCustomerPanel();
+	}
+	
+	public void refreshCustomerPanel(){
+	    System.out.println("refreshCustomerPanel called from MainController");
+	    txCtrl.refreshCustomerPanel();
 	}
 
 	/**
@@ -146,4 +260,35 @@ public class MainController {
 		maintenanceCtrl.closeDown();
 		simulatorCtrl.closeDown();
 	}
+	
+	public void refreshMachineryDisplay(){
+	    System.out.println("refreshMachineryDisplay called from MainController");
+	    machineryCtrl.refreshMachineryDisplay();
+	}
+	
+	public void dispenseDrinkFromMachinery(int idx) throws VMCSException {
+	    System.out.println("dispenseDrinkFromMachinery called from MainController");
+	    machineryCtrl.dispenseDrink(idx);
+	}
+	
+	public Store getStore(int type) {
+	    System.out.println("getStore called from MainController");
+	    return storeCtrl.getStore(type);
+	}
+	
+	public int getStoreSize(int type) {
+	    System.out.println("getStoreSize called from MainController");
+	    return storeCtrl.getStoreSize(type);
+	}
+	
+	public void storeCoinInMachinery(Coin c) throws VMCSException {
+	    System.out.println("storeCoinInMachinery called from MainController");
+	    machineryCtrl.storeCoin(c);
+	}
+	
+	public void giveChangeFromMachinery(int idx, int numOfCoins) throws VMCSException {
+	    System.out.println("giveChangeFromMachinery called from MainController");
+	    machineryCtrl.giveChange(idx, numOfCoins);
+	}
+	
 }//End of class MainController

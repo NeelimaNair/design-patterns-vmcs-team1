@@ -1,5 +1,5 @@
 #
-#Wed Aug 20 16:19:46 SGT 2014
+#Sat Oct 05 14:57:11 SGT 2019
 Name5=$1
 Name4=50C
 Name3=20C
@@ -12,8 +12,8 @@ Value3=20
 Value2=10
 Value1=5
 Quantity5=0
-Quantity4=2
-Quantity3=1
+Quantity4=3
+Quantity3=3
 Quantity2=0
 Quantity1=0
 Weight5=42.2

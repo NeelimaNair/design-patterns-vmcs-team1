@@ -9,7 +9,6 @@ package sg.edu.nus.iss.vmcs.customer;
 
 import sg.edu.nus.iss.vmcs.store.DrinksBrand;
 import sg.edu.nus.iss.vmcs.store.Store;
-import sg.edu.nus.iss.vmcs.store.StoreController;
 import sg.edu.nus.iss.vmcs.store.StoreItem;
 import sg.edu.nus.iss.vmcs.store.StoreObject;
 import sg.edu.nus.iss.vmcs.system.MainController;
@@ -20,7 +19,7 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  * @author Team SE16T5E
  * @version 1.0 2008-10-01
  */
-public class DispenseController {
+public class DispenseController{
     private TransactionController txCtrl;
     private int selection=0;
 	
@@ -41,9 +40,9 @@ public class DispenseController {
 			return;
 		}
 		updateDrinkSelection(-1);
-		int storeSize=txCtrl.getMainController().getStoreController().getStoreSize(Store.DRINK);
+		int storeSize=txCtrl.getMainController().getStoreSize(Store.DRINK);
 		for(int i=0;i<storeSize;i++){
-			StoreItem storeItem=txCtrl.getMainController().getStoreController().getStoreItem(Store.DRINK,i);
+			StoreItem storeItem=txCtrl.getMainController().getStoreItem(Store.DRINK,i);
 			int quantity=storeItem.getQuantity();
 			DrinksBrand drinksBrand=(DrinksBrand)storeItem.getContent();
 			String name=drinksBrand.getName();
@@ -72,11 +71,10 @@ public class DispenseController {
 			return;
 		}
 		DrinkSelectionBox drinkSelectionBox=custPanel.getDrinkSelectionBox();
-		StoreController storeCtrl=mainCtrl.getStoreController();
-		int storeSize=storeCtrl.getStoreSize(Store.DRINK);
+		int storeSize=mainCtrl.getStoreSize(Store.DRINK);
 		for(int i=0;i<storeSize;i++){
 			drinkSelectionBox.setState(i,allow);
-			StoreItem storeItem=storeCtrl.getStoreItem(Store.DRINK, i);
+			StoreItem storeItem=mainCtrl.getStoreItem(Store.DRINK, i);
 			int quantity=storeItem.getQuantity();
 			if(quantity==0)
 				drinkSelectionBox.setItemState(i,true);
@@ -107,10 +105,9 @@ public class DispenseController {
 	 */
 	public boolean dispenseDrink(int selectedBrand){
 		try{
-			txCtrl.getMainController().getMachineryController().dispenseDrink(selectedBrand);
+			txCtrl.getMainController().dispenseDrinkFromMachinery(selectedBrand);
 			MainController mainCtrl=txCtrl.getMainController();
-			StoreController storeCtrl=mainCtrl.getStoreController();
-			StoreItem drinkStoreItem=storeCtrl.getStore(Store.DRINK).getStoreItem(selectedBrand);
+			StoreItem drinkStoreItem=mainCtrl.getStore(Store.DRINK).getStoreItem(selectedBrand);
 			StoreObject storeObject=drinkStoreItem.getContent();
 			DrinksBrand drinksBrand=(DrinksBrand)storeObject;
 			String drinksName=drinksBrand.getName();
