@@ -7,7 +7,11 @@
  */
 package sg.edu.nus.iss.vmcs.machinery;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import sg.edu.nus.iss.vmcs.store.Coin;
+import sg.edu.nus.iss.vmcs.store.StoreItem;
 import sg.edu.nus.iss.vmcs.system.BaseController;
 import sg.edu.nus.iss.vmcs.system.MainController;
 import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
@@ -20,7 +24,7 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class MachineryController extends BaseController{
+public class MachineryController extends BaseController implements Observer {
 	/**This attribute reference to the MainController*/
 
 	private MachinerySimulatorPanel ml;
@@ -194,6 +198,15 @@ public class MachineryController extends BaseController{
 	public void refreshMachineryDisplay(){
 		if(ml!=null){
 			ml.refresh();
+		}
+	}
+
+
+	@Override
+	public void update(Observable obs, Object quantity) {
+		if (obs instanceof StoreItem) {			
+			System.out.println("State change reported by StoreItem in MachineryController.");
+			refreshMachineryDisplay();			
 		}
 	}
 }//End of class MachineryController
