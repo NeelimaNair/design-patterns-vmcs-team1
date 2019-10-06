@@ -21,7 +21,6 @@ import sg.edu.nus.iss.vmcs.store.DrinksBrand;
 import sg.edu.nus.iss.vmcs.store.Store;
 import sg.edu.nus.iss.vmcs.store.StoreItem;
 import sg.edu.nus.iss.vmcs.system.BaseController;
-import sg.edu.nus.iss.vmcs.system.MainController;
 import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
 
 /**
@@ -49,7 +48,6 @@ public class TransactionController extends BaseController{
 	private int price=0;
 	/**Identifier of the selected drink.*/
 	private int selection=-1;
-	private MainController mainController;
 	
 	/**
 	 * This constructor creates an instance of the TransactionController.
@@ -67,22 +65,6 @@ public class TransactionController extends BaseController{
         } 
         return uniqueInstance;
     }
-
-	/**
-	 * This method returns the MainController.
-	 * @return the MainController.
-	 */
-	public MainController getMainController() {
-		return mainController;
-	}
-	
-	/**
-	 * This method sets the MainController.
-	 */
-	public void setMainController(MainController mainCtrl) {
-		this.mainController = mainCtrl;
-	}
-
 	
 	/**
 	 * This method displays and initialize the CustomerPanel.
@@ -116,11 +98,8 @@ public class TransactionController extends BaseController{
 	 */
 	public void startTransaction(int drinkIdentifier){
 		setSelection(drinkIdentifier);
-		StoreItem storeItem=mainController.getStoreItem(Store.DRINK,drinkIdentifier);
-		storeItem.addObserver(dispenseCtrl); 
-		System.out.println("DispenseController has started following StoreItem.");
-		storeItem.addObserver(mainController.getMachineryController());
-		System.out.println("MachineryController has started following StoreItem.");
+		storeItem=mainController.getStoreItem(Store.DRINK,drinkIdentifier);
+		addObservers();
 		DrinksBrand drinksBrand=(DrinksBrand)storeItem.getContent();
 		setPrice(drinksBrand.getPrice());
 		changeGiver.resetChange();
@@ -178,6 +157,7 @@ public class TransactionController extends BaseController{
 		}
 		coinReceiver.storeCash();
 		dispenseCtrl.allowSelection(true);
+		deleteObservers();
 		System.out.println("CompleteTransaction: End");
 	}
 	
@@ -192,6 +172,7 @@ public class TransactionController extends BaseController{
 		dispenseCtrl.allowSelection(false);
 		coinReceiver.refundCash();
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("TerminateFault: End");
 	}
 	
@@ -216,6 +197,7 @@ public class TransactionController extends BaseController{
 			custPanel.setTerminateButtonActive(false);
 		}
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("TerminateTransaction: End");
 	}
 	
@@ -228,6 +210,7 @@ public class TransactionController extends BaseController{
 		coinReceiver.refundCash();
 		dispenseCtrl.allowSelection(true);
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("CancelTransaction: End");
 	}
 	
@@ -364,4 +347,24 @@ public class TransactionController extends BaseController{
 	public void nullifyCustomerPanel(){
 		custPanel=null;
 	}
+	
+	private void addObservers() {
+		if (storeItem!=null) {
+			storeItem.addObserver(dispenseCtrl); 
+			System.out.println("DispenseController has started following StoreItem.");
+			storeItem.addObserver(mainController.getMachineryController());
+			System.out.println("MachineryController has started following StoreItem.");
+		}
+	}
+	
+	private void deleteObservers() {
+		if (storeItem!=null) {
+			storeItem.deleteObserver(dispenseCtrl); 
+			System.out.println("DispenseController has stopped following StoreItem.");
+			storeItem.deleteObserver(mainController.getMachineryController());
+			System.out.println("MachineryController has stopped following StoreItem.");
+		}
+	}
+	
+	
 }//End of class TransactionController
