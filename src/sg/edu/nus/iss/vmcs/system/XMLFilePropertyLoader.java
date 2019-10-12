@@ -28,7 +28,7 @@ import sg.edu.nus.iss.vmcs.store.*;
  * @author Olivo Miotto, Pang Ping Li
  */
 
-public abstract class FilePropertyLoader implements PropertyLoader {
+public abstract class XMLFilePropertyLoader implements PropertyLoader {
 	private static final String PROP_NUM_ITEMS = "NumOfItems";
 
 	private Properties prop;
@@ -38,7 +38,7 @@ public abstract class FilePropertyLoader implements PropertyLoader {
 	 * This constructor creates an instance of the FilePropertyLoader object.
 	 * @param fileName the filename of the property file.
 	 */
-	public FilePropertyLoader(String fileName) {
+	public XMLFilePropertyLoader(String fileName) {
 		this.fileName = fileName;
 	}
 
@@ -50,7 +50,8 @@ public abstract class FilePropertyLoader implements PropertyLoader {
 	public void initialize() throws IOException {
 		prop = new Properties(System.getProperties());
 		FileInputStream stream = new FileInputStream(fileName);
-		prop.load(stream);
+		//prop.load(stream);
+		prop.loadFromXML(stream);
 		stream.close();
 	}
 
@@ -60,7 +61,8 @@ public abstract class FilePropertyLoader implements PropertyLoader {
 	 */
 	public void saveProperty() throws IOException {
 		FileOutputStream stream = new FileOutputStream(fileName);
-		prop.store(stream, "");
+		//prop.store(stream, "");
+		prop.storeToXML(stream, "");
 		stream.close();
 	}
 

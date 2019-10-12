@@ -10,6 +10,7 @@ package sg.edu.nus.iss.vmcs.system;
 import java.io.IOException;
 
 import sg.edu.nus.iss.vmcs.customer.TransactionController;
+import sg.edu.nus.iss.vmcs.dao.PropertyLoaderFactory;
 import sg.edu.nus.iss.vmcs.machinery.MachineryController;
 import sg.edu.nus.iss.vmcs.maintenance.MaintenanceController;
 import sg.edu.nus.iss.vmcs.store.StoreController;
@@ -61,10 +62,19 @@ public class MainController {
 	public void initialize() throws VMCSException {
 		try {
 			Environment.initialize(propertyFile);
-			CashPropertyLoader cashLoader =
-				new CashPropertyLoader(Environment.getCashPropFile());
-			DrinkPropertyLoader drinksLoader =
-				new DrinkPropertyLoader(Environment.getDrinkPropFile());
+			
+			//fROM TEXTFILE
+			//CashPropertyLoader cashLoader = (CashPropertyLoader)PropertyLoaderFactory.getPropertyFactory(1).getCashProperty();
+				//new CashPropertyLoader(Environment.getCashPropFile());
+			//From xml
+			CashXMLPropertyLoader cashLoader = (CashXMLPropertyLoader)PropertyLoaderFactory.getPropertyFactory(2).getCashProperty();
+			
+			//from text file
+			//DrinkPropertyLoader drinksLoader = (DrinkPropertyLoader)PropertyLoaderFactory.getPropertyFactory(1).getDrinksProperty();
+			
+			//from xml
+			DrinkXMLPropertyLoader drinksLoader = (DrinkXMLPropertyLoader)PropertyLoaderFactory.getPropertyFactory(2).getDrinksProperty();
+				//new DrinkPropertyLoader(Environment.getDrinkPropFile());
 			cashLoader.initialize();
 			drinksLoader.initialize();
 			storeCtrl = new StoreController(cashLoader, drinksLoader);
