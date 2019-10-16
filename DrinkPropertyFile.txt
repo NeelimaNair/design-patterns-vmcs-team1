@@ -1,5 +1,5 @@
 #
-#Wed Aug 20 16:19:46 SGT 2014
+#Sat Oct 05 14:57:11 SGT 2019
 Name6=Soya Bean
 Name5=Coca-Cola
 Name4=Soya Bean
@@ -9,7 +9,7 @@ Name1=Coca-Cola
 NumOfItems=6
 Quantity6=0
 Quantity5=3
-Quantity4=1
+Quantity4=0
 Quantity3=0
 Quantity2=0
 Quantity1=0

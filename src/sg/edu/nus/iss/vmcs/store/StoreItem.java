@@ -7,6 +7,8 @@
  */
 package sg.edu.nus.iss.vmcs.store;
 
+import java.util.Observable;
+
 /**
  * This entity object implements a generic storage item class&#46; It performs actions like;
  * returning content (Store Item identification), setting quantity, returning quantity,
@@ -25,7 +27,10 @@ package sg.edu.nus.iss.vmcs.store;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class StoreItem {
+/*
+ * File amended to include the observer pattern
+ */
+public class StoreItem extends Observable {
 	private StoreObject content;
 	private int quantity;
 
@@ -85,6 +90,7 @@ public class StoreItem {
 		quantity--;
 		if (quantity < 0)
 			quantity = 0;
+		updateObservers();
 	}
 
 	/**
@@ -92,5 +98,14 @@ public class StoreItem {
 	 */
 	public void increment() {
 		quantity++;
+		updateObservers();
+	}
+	
+	private void updateObservers() {
+		if (this instanceof DrinksStoreItem) {
+			setChanged(); 
+			System.out.println("StoreItem has notified observers.");
+			notifyObservers(quantity); 	
+		}	
 	}
 }//End of class StoreItem
