@@ -20,7 +20,7 @@ import java.awt.Frame;
 import sg.edu.nus.iss.vmcs.store.DrinksBrand;
 import sg.edu.nus.iss.vmcs.store.Store;
 import sg.edu.nus.iss.vmcs.store.StoreItem;
-import sg.edu.nus.iss.vmcs.system.MainController;
+import sg.edu.nus.iss.vmcs.system.BaseController;
 import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
 
 /**
@@ -29,12 +29,16 @@ import sg.edu.nus.iss.vmcs.system.SimulatorControlPanel;
  * @author Team SE16T5E
  * @version 1.0 2008-10-01
  */
-public class TransactionController {
-	private MainController mainCtrl;
+/*
+ * File amended to include the observer and singleton patterns
+ */
+public class TransactionController extends BaseController{
 	private CustomerPanel custPanel;
 	private DispenseController dispenseCtrl;
 	private ChangeGiver changeGiver;
 	private CoinReceiver coinReceiver;
+	private static TransactionController uniqueInstance = null;
+	private StoreItem storeItem;
 
 	/**Set to TRUE when change is successfully issued during the transaction.*/
 	private boolean changeGiven=false;
@@ -47,28 +51,26 @@ public class TransactionController {
 	
 	/**
 	 * This constructor creates an instance of the TransactionController.
-	 * @param mainCtrl the MainController.
+	 * @param mCtrl the MainController.
 	 */
-	public TransactionController(MainController mainCtrl) {
-		this.mainCtrl = mainCtrl;
+	private TransactionController() {
 		dispenseCtrl=new DispenseController(this);
 		coinReceiver=new CoinReceiver(this);
 		changeGiver=new ChangeGiver(this);
 	}
-
-	/**
-	 * This method returns the MainController.
-	 * @return the MainController.
-	 */
-	public MainController getMainController() {
-		return mainCtrl;
-	}
-
+	
+	public static synchronized TransactionController getInstance(){
+        if (uniqueInstance == null) {
+        	uniqueInstance = new TransactionController();         
+        } 
+        return uniqueInstance;
+    }
+	
 	/**
 	 * This method displays and initialize the CustomerPanel.
 	 */
 	public void displayCustomerPanel() {
-		SimulatorControlPanel scp = mainCtrl.getSimulatorControlPanel();
+		SimulatorControlPanel scp = mainController.getSimulatorControlPanel();
 	    custPanel = new CustomerPanel((Frame) scp, this);
 		custPanel.display();
 		dispenseCtrl.updateDrinkPanel();
@@ -96,7 +98,8 @@ public class TransactionController {
 	 */
 	public void startTransaction(int drinkIdentifier){
 		setSelection(drinkIdentifier);
-		StoreItem storeItem=mainCtrl.getStoreController().getStoreItem(Store.DRINK,drinkIdentifier);
+		storeItem=mainController.getStoreItem(Store.DRINK,drinkIdentifier);
+		addObservers();
 		DrinksBrand drinksBrand=(DrinksBrand)storeItem.getContent();
 		setPrice(drinksBrand.getPrice());
 		changeGiver.resetChange();
@@ -154,8 +157,7 @@ public class TransactionController {
 		}
 		coinReceiver.storeCash();
 		dispenseCtrl.allowSelection(true);
-		
-		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("CompleteTransaction: End");
 	}
 	
@@ -170,6 +172,7 @@ public class TransactionController {
 		dispenseCtrl.allowSelection(false);
 		coinReceiver.refundCash();
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("TerminateFault: End");
 	}
 	
@@ -194,6 +197,7 @@ public class TransactionController {
 			custPanel.setTerminateButtonActive(false);
 		}
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("TerminateTransaction: End");
 	}
 	
@@ -206,6 +210,7 @@ public class TransactionController {
 		coinReceiver.refundCash();
 		dispenseCtrl.allowSelection(true);
 		refreshMachineryDisplay();
+		deleteObservers();
 		System.out.println("CancelTransaction: End");
 	}
 	
@@ -215,7 +220,7 @@ public class TransactionController {
 	public void refreshCustomerPanel(){
 		/*
 		if(custPanel==null){
-			mainCtrl.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER,true);
+			mCtrl.getSimulatorControlPanel().setActive(SimulatorControlPanel.ACT_CUSTOMER,true);
 		}
 		*/
 		dispenseCtrl.updateDrinkPanel();
@@ -333,8 +338,7 @@ public class TransactionController {
 	 * This method refreshes the MachinerySimulatorPanel.
 	 */
 	public void refreshMachineryDisplay(){
-		mainCtrl.getMachineryController().refreshMachineryDisplay();
-		
+		mainController.refreshMachineryDisplay();
 	}
 	
 	/**
@@ -343,4 +347,24 @@ public class TransactionController {
 	public void nullifyCustomerPanel(){
 		custPanel=null;
 	}
+	
+	private void addObservers() {
+		if (storeItem!=null) {
+			storeItem.addObserver(dispenseCtrl); 
+			System.out.println("DispenseController has started following StoreItem.");
+			storeItem.addObserver(mainController.getMachineryController());
+			System.out.println("MachineryController has started following StoreItem.");
+		}
+	}
+	
+	private void deleteObservers() {
+		if (storeItem!=null) {
+			storeItem.deleteObserver(dispenseCtrl); 
+			System.out.println("DispenseController has stopped following StoreItem.");
+			storeItem.deleteObserver(mainController.getMachineryController());
+			System.out.println("MachineryController has stopped following StoreItem.");
+		}
+	}
+	
+	
 }//End of class TransactionController

@@ -9,6 +9,8 @@ package sg.edu.nus.iss.vmcs.store;
 
 import java.io.IOException;
 
+import sg.edu.nus.iss.vmcs.system.BaseController;
+
 /**
  * This control object manages changes in CashStore attributes and 
  * the DrinksStore attributes.
@@ -26,7 +28,7 @@ import java.io.IOException;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class StoreController {
+public class StoreController extends BaseController{
 	private CashStore cStore;
 	private DrinksStore dStore;
 
