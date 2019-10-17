@@ -42,7 +42,6 @@ public abstract class FilePropertyLoader implements PropertyLoader {
 		this.fileName = fileName;
 	}
 
-	//all the prop.load/prop.store FileInputStream/FileOutputStream needs to be replaced factory methods
 	/**
 	 * This method reads the properties file into a hash table.
 	 * @throws IOException if fail to load properties from properties file.
