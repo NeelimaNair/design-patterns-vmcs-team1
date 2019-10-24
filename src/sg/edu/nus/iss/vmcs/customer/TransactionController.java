@@ -169,10 +169,8 @@ public class TransactionController extends BaseController{
 	 */
 	public void terminateFault(){
 		System.out.println("TerminateFault: Begin");
-		dispenseCtrl.allowSelection(false);
-		coinReceiver.refundCash();
-		refreshMachineryDisplay();
-		deleteObservers();
+		TerminateTemplate terminateTransactionFault = TerminateFactory.create(TerminateFactory.TerminateType.TERMINATE_TRANSACTION);
+		terminateTransactionFault.terminate(false);				 		
 		System.out.println("TerminateFault: End");
 	}
 	
@@ -190,14 +188,8 @@ public class TransactionController extends BaseController{
 	 */
 	public void terminateTransaction(){
 		System.out.println("TerminateTransaction: Begin");
-		dispenseCtrl.allowSelection(false);
-		coinReceiver.stopReceive();
-		coinReceiver.refundCash();
-		if(custPanel!=null){
-			custPanel.setTerminateButtonActive(false);
-		}
-		refreshMachineryDisplay();
-		deleteObservers();
+		TerminateTemplate terminateCurrentTransaction = TerminateFactory.create(TerminateFactory.TerminateType.TERMINATE_FAULT);
+		terminateCurrentTransaction.terminate(false);
 		System.out.println("TerminateTransaction: End");
 	}
 	
@@ -206,11 +198,8 @@ public class TransactionController extends BaseController{
 	 */
 	public void cancelTransaction(){
 		System.out.println("CancelTransaction: Begin");
-		coinReceiver.stopReceive();
-		coinReceiver.refundCash();
-		dispenseCtrl.allowSelection(true);
-		refreshMachineryDisplay();
-		deleteObservers();
+		TerminateTemplate cancelTransaction = TerminateFactory.create(TerminateFactory.TerminateType.CANCEL_TRANSACTION);
+		cancelTransaction.terminate(true);
 		System.out.println("CancelTransaction: End");
 	}
 	
@@ -357,7 +346,7 @@ public class TransactionController extends BaseController{
 		}
 	}
 	
-	private void deleteObservers() {
+	public void deleteObservers() {
 		if (storeItem!=null) {
 			storeItem.deleteObserver(dispenseCtrl); 
 			System.out.println("DispenseController has stopped following StoreItem.");
