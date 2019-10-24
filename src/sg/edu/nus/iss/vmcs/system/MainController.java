@@ -14,8 +14,10 @@ import sg.edu.nus.iss.vmcs.customer.CoinReceiver;
 import sg.edu.nus.iss.vmcs.customer.CustomerPanel;
 import sg.edu.nus.iss.vmcs.customer.DispenseController;
 import sg.edu.nus.iss.vmcs.customer.TransactionController;
+import sg.edu.nus.iss.vmcs.dao.PropertyLoaderFactory;
 import sg.edu.nus.iss.vmcs.machinery.MachineryController;
 import sg.edu.nus.iss.vmcs.maintenance.MaintenanceController;
+import sg.edu.nus.iss.vmcs.store.PropertyLoader;
 import sg.edu.nus.iss.vmcs.store.Coin;
 import sg.edu.nus.iss.vmcs.store.Store;
 import sg.edu.nus.iss.vmcs.store.StoreController;
@@ -75,10 +77,26 @@ public class MainController {
 	public void initialize() throws VMCSException {
 		try {
 			Environment.initialize(propertyFile);
-			CashPropertyLoader cashLoader =
-				new CashPropertyLoader(Environment.getCashPropFile());
-			DrinkPropertyLoader drinksLoader =
-				new DrinkPropertyLoader(Environment.getDrinkPropFile());
+			
+			//old code
+			/*CashPropertyLoader cashLoader =
+					new CashPropertyLoader(Environment.getCashPropFile());
+				DrinkPropertyLoader drinksLoader =
+					new DrinkPropertyLoader(Environment.getDrinkPropFile());*/
+
+			//with Abstract Factory
+			//from text file
+			//PropertyLoader cashLoader = PropertyLoaderFactory.getPropertyFactory(1).getCashProperty();
+
+			//From xml file
+			PropertyLoader cashLoader = PropertyLoaderFactory.getPropertyFactory(2).getCashProperty();
+			
+			//from text file
+			//PropertyLoader drinksLoader = PropertyLoaderFactory.getPropertyFactory(1).getDrinksProperty();
+			
+			//from xml file
+			PropertyLoader drinksLoader = PropertyLoaderFactory.getPropertyFactory(2).getDrinksProperty();
+
 			cashLoader.initialize();
 			drinksLoader.initialize();
 			storeCtrl = new StoreController(cashLoader, drinksLoader);
