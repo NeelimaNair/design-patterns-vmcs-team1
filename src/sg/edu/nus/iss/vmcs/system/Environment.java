@@ -23,13 +23,12 @@ public class Environment {
 	public final static String DRINK_PROP_FILE = "drinkFile";
 	/**This constant attribute identify the cash property filename*/
 	public final static String CASH_PROP_FILE = "cashFile";
-	/**This constant attribute denotes the password string*/
-	public final static String PASSWORD = "password";
-
 	/**This constant attribute identify the drink xml property filename*/
 	public final static String DRINK_XML_PROP_FILE = "drinkXMLFile";
 	/**This constant attribute identify the cash xml property filename*/
 	public final static String CASH_XML_PROP_FILE = "cashXMLFile";
+	/**This constant attribute denotes the password string*/
+	public final static String PASSWORD = "password";
 	
 	private static Properties prop;
 

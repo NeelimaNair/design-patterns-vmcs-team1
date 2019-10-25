@@ -9,6 +9,8 @@ package sg.edu.nus.iss.vmcs.system;
 
 
 
+import java.io.IOException;
+
 import sg.edu.nus.iss.vmcs.store.*;
 
 /**
@@ -17,7 +19,7 @@ import sg.edu.nus.iss.vmcs.store.*;
  * @version 3.0 5/07/2003
  * @author Olivo Miotto, Pang Ping Li
  */
-public class CashPropertyLoader extends FilePropertyLoader {
+public class CashPropertyLoader extends PropertyLoader {
 
 	private static final String NAME_LABEL     = "Name";
 	private static final String WEIGHT_LABEL   = "Weight";
@@ -30,6 +32,7 @@ public class CashPropertyLoader extends FilePropertyLoader {
 	 */
 	public CashPropertyLoader(String filen) {
 		super(filen);
+		System.out.println("Entering concrete cash property loader class");
 	}
 
 	/**
@@ -83,5 +86,29 @@ public class CashPropertyLoader extends FilePropertyLoader {
 
 		itn = new String(QUANTITY_LABEL + idx);
 		setValue(itn, String.valueOf(item.getQuantity()));
+	}
+
+	@Override
+	public void setPropertyLoaderType(int propertyLoader) {
+		switch (propertyLoader) {
+			case 0:
+				setPropertyLoaderImpl(new FilePropertyLoader(fileName));
+				break;
+			case 1:
+				setPropertyLoaderImpl(new XMLPropertyLoader(fileName));
+				break;
+		}		
+	}
+
+	@Override
+	public void load() throws IOException {
+		// TODO Check if prop can be generic to support RDBMS
+		getPropertyLoaderImpl().load(prop);
+	}
+
+	@Override
+	public void save() throws IOException {
+		// TODO Check if prop can be generic to support RDBMS
+		getPropertyLoaderImpl().save(prop);
 	}
 }//End of class CashPropertyLoader

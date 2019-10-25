@@ -255,7 +255,7 @@ public class StoreController extends BaseController{
 		for (int i = 0; i < size; i++) {
 			cashLoader.setItem(i, cStore.getStoreItem(i));
 		}
-		cashLoader.saveProperty();
+		cashLoader.save();
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class StoreController extends BaseController{
 		for (int i = 0; i < size; i++) {
 			drinksLoader.setItem(i, dStore.getStoreItem(i));
 		}
-		drinksLoader.saveProperty();
+		drinksLoader.save();
 	}
 
 	/**

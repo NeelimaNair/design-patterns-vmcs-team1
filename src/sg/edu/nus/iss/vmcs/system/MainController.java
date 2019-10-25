@@ -89,16 +89,18 @@ public class MainController {
 			//PropertyLoader cashLoader = PropertyLoaderFactory.getPropertyFactory(1).getCashProperty();
 
 			//From xml file
-			PropertyLoader cashLoader = PropertyLoaderFactory.getPropertyFactory(2).getCashProperty();
+			PropertyLoader cashLoader = PropertyLoaderFactory.getPropertyFactory(1).getCashProperty();
 			
 			//from text file
 			//PropertyLoader drinksLoader = PropertyLoaderFactory.getPropertyFactory(1).getDrinksProperty();
 			
 			//from xml file
-			PropertyLoader drinksLoader = PropertyLoaderFactory.getPropertyFactory(2).getDrinksProperty();
+			PropertyLoader drinksLoader = PropertyLoaderFactory.getPropertyFactory(1).getDrinksProperty();
 
-			cashLoader.initialize();
-			drinksLoader.initialize();
+			cashLoader.setPropertyLoaderType(0);
+			drinksLoader.setPropertyLoaderType(0);
+			cashLoader.load();
+			drinksLoader.load();
 			storeCtrl = new StoreController(cashLoader, drinksLoader);
 			storeCtrl.initialize();
 			simulatorCtrl = new SimulationController(this);
