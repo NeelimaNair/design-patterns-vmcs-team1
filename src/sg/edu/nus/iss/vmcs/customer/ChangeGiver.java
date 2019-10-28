@@ -21,13 +21,41 @@ import sg.edu.nus.iss.vmcs.util.VMCSException;
  */
 public class ChangeGiver {
 	private TransactionController txCtrl; 
+	
+	//Strategy object
+	private ChangeDispenserStrategy changeStrategy;
 
+	
 	/**
 	 * The constructor creates an instance of the object.
 	 * @param txCtrl the TransactionController
 	 */
 	public ChangeGiver(TransactionController txCtrl){
 		this.txCtrl=txCtrl;
+		setDispenserStrategy("PAYNOW");
+	}
+	
+	//Set the strategy
+	public void setDispenserStrategy(String s) {
+		
+		switch(s) {
+		case "PAYNOW":
+			//Change the strategy
+			changeStrategy = new ChangeDispensePayNowStrategy();
+		break;
+		
+		case "REFILL-OTW":
+			//Change the strategy
+		break;
+		
+		case "BALANCED":
+			//Change the strategy
+		break;
+		
+		default:
+			changeStrategy = new ChangeDispenseDefaultStrategy();
+		break;
+		}
 	}
 	
 	/**
@@ -47,34 +75,13 @@ public class ChangeGiver {
 	 * @return return TRUE if give change use case success, otherwise, return FALSE.
 	 */
 	public boolean giveChange(int changeRequired){
-		if(changeRequired==0)
-			return true;
-		try{
-			int changeBal=changeRequired;
-			MainController mainCtrl=txCtrl.getMainController();
-			int cashStoreSize=mainCtrl.getStoreSize(Store.CASH); 
-			for(int i=cashStoreSize-1;i>=0;i--){
-				StoreItem cashStoreItem=mainCtrl.getStore(Store.CASH).getStoreItem(i);
-				int quantity=cashStoreItem.getQuantity();
-				Coin coin=(Coin)cashStoreItem.getContent();
-				int value=coin.getValue();
-				int quantityRequired=0;
-				while(changeBal>0&&changeBal>=value&&quantity>0){
-					changeBal-=value;
-					quantityRequired++;
-					quantity--;
-				}
-				txCtrl.getMainController().giveChangeFromMachinery(i,quantityRequired);
-			}
-			txCtrl.getCustomerPanel().setChange(changeRequired-changeBal);
-			if(changeBal>0)
-				txCtrl.getCustomerPanel().displayChangeStatus(true);
+		//Replace by call to strategy object
+		
+		if (changeStrategy==null) {
+			setDispenserStrategy("DEFAULT");
 		}
-		catch(VMCSException ex){
-			txCtrl.terminateFault();
-			return false;
-		}
-		return true;
+		
+		return changeStrategy.dispenseChange(txCtrl, changeRequired);
 	}
 	
 	/**
